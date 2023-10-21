@@ -30,6 +30,7 @@ jobs:
         image: ${{env.DOCKER_USER}}/${{env.DOCKER_REPOSITORY}}:${{env.NODE_IMAGE_TAG}}
         annotations: true
         severity: CRITICAL
+        severity_threshold: CRITICAL
 
     - name: Push Image to Docker Hub    
       run: |
