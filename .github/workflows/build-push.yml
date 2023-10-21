@@ -3,15 +3,15 @@ env:
   DOCKER_USER: ${{secrets.DOCKER_HUB_USER}}
   DOCKER_PASSWORD: ${{secrets.DOCKER_HUB_TOKEN}}
   DOCKER_REPOSITORY: class-docker-app
-  NODE_IMAGE_TAG: nodejs-app-v21
+  NODE_IMAGE_TAG: nodejs-app-v1
 
 on:
   push:
     branches: [ master ]
-
+  
 jobs:
   
-  build-and-push-image:
+  build-scan-push:
     
     name: Build and Scan Docker Images
     runs-on: ubuntu-latest
@@ -22,7 +22,14 @@ jobs:
     - name: Build and tag Image
       run: |
         docker build -t ${{env.DOCKER_USER}}/${{env.DOCKER_REPOSITORY}}:${{env.NODE_IMAGE_TAG}} .
-       
+        
+    - name: Run Trivy vulnerability scanner
+      id: scan
+      uses: crazy-max/ghaction-container-scan@v3
+      with: 
+        image: ${{env.DOCKER_USER}}/${{env.DOCKER_REPOSITORY}}:${{env.NODE_IMAGE_TAG}}
+        annotations: true
+
     - name: Push Image to Docker Hub    
       run: |
         docker login -u ${{env.DOCKER_USER}} -p ${{env.DOCKER_PASSWORD}}
